@@ -1,0 +1,45 @@
+	Locks provided for them have been around for more than 6000 years used to safegaurd the temples and gates of the old world. Since ancient Egypt ways of safeguarding important places has lock technology behind the protection of our most important relics and resources. Fast forward, the Romans came up with a system of metal locks, they also came up with the idea of a ward, which is still used today. Wards are the different cross sections on a key used to raise the particular pins when inserted inside a lock we still use them today. The idea of skeleton keys came around in the 20th century where you wanted a single key to open many doors, yet at the same time have a single particular key only open that door. Now living in the age of digital security, concepts such as encryption have formed a new standard of security, backed by computation. 
+	
+	With the over 3 years of development in software defined radio, and studying the infrastructre of digital signal communication. Our lectures and demonstrations have so been so well recieved by the Commonwealth University of Pennsylvania, that we continued our research under supervision of the University. This article is to provide insight into what started as a small hobby in our rooms, leading to multiple lectures, and now a prototype of a programmable RFID lock system.
+
+
+	With the need for modern electronic security on the rise, due to the constant expansion of information and access to it. 
+Software defined radio gave us a glimpse into the world of replay attacks on devices such as drones, Wifi, and keyless entry devices (primarily vehicle keys with rolling code).
+ We as utiziled our skills in operating systems, and examined modern security protocols including RFID
+ (Radio Frequency Identification) and AES and wondered how it can be all incorporated into a design that organizations can implement and be confident in. 
+ The need for a modern programmable Lock became obvious.
+ 
+ 	Any corporation that has good securuity does not store any information relating to security on the same network
+ as its product line database or where the User space is at. Organizations segment their information if they find it valuable, so why would their physical security in the same place where users can gain access to it? Even worse is the new trend of Outsourcing cybersecurity to other companies, due to lack of funding, staff, or expertise. Companies should keep their data secure, encrypted, and segmented, especially with the expontial damage that cyber attacks due to systems. They not only cost companies millions or billions of dollars, they also effect the users and clients. From data breaches to pipelines running out of gas. Cybersecurity remains overlooked in many companany memos. Of coarse until, that organization or Institution gets hacked, or what is know on the internet "PWNED".
+ 
+ 	Itegrating the famous Arduino R3 microcontroller into a fully-fledged circuit with a DSP(Digital Signal Processing) module, and an RFID scanner. We were able to create a solution for RFID locks thats not only communicates  on encrypted signals, it is just as malleable in its approach. The Layout begins with the Series of small transievers from the company Reyax. Using the LoRa 896, we can send out a digital signal to other LoRas and establish a communication network several miles deep. The module features customizable frequency, encoding rates, different buad Rate all on 3.3 volts. For 2 seperate modules to exchange data, they must first be configured to the same frequency, set the same Network ID, and have a different addresses. Additionally you can add a password which encryptes your signal, and both modules must have the same password configured. It also has other parameters you can configure which can be kept at default, such as programmable preamble, spreadfactor, and bandwidth.
+ 	
+ 	
+ 	The next compoent is an RFID key reader. The MFRC522 is used in multiple lock systems. It uses a slave-master pin set up to communicate and is also powered on 3.3 volts. The key must be within 1-2 CM from the scanner in order for it to register its presence. RFID locks arent new and are used in many apartment and buildings today.
+ 	
+ 	Once the reyax is wired with the microcontroller and on the same SPI (Serial Pheripheral Interface) as the MFRC522 RFID scanner. All the devices can exchange information with proper programming. The process begins with an RFID key being scanned by the MFR522. It transports that key UID to the microcontroller which types to the Reyax an AT+SEND command with parameters already configured or stored in flash memory. The reyax than relays that information in the form of a digital signal to the the specified address. It also has the option to broadcast to all addresses. The recieving module which will be discussed later. The microcontroller also listens using the transiever to add or remove key UIDs from the system
+ 	
+ 	
+ 	With ARM architecture slowly being on the rise, as questionable as speculative execution is...ARM devices like the Raspberry Pi remain an important topic in do it yourself projects and security solutions. The Reyax being a module that communicates via PWR,GND,Tx,Rx pins. We took a unconventional route and combined it with a CP2102 which is a TTL to USB converter to plug it straight into the USB slot of the Pi4. This small yet effective transmitter can run on ARM, or x86 based processors. The best part is it only needs a serial monitor to communicate. The serial communcating software you choose is up to you as there is plently out there, however it must contain a Carriage and Linefeed option also know as CR+LF to properly communicate with the device. From a distance with this device you can assign and remove RFID keys to each specific electronic lock, through the designate-UID and remove-UID command we built for the microcontroller to interpret. Additionally,  you can call for a list of all designated UID to a specific microcontroller with the list-keys command. In the end you have access to a magnificient amount of networking, all done seperate from wifi, and with 0 outsourcing to cloud or another 3rd party API and of course it has 128AES as a form of assymetric key encryption.
+ 	
+ 	The circuit design on the schematics is rather complex, the MFRC522 reyax, and lock are all on the same power and ground line. The lock is powered by a 12 volt relay module, additionally the reyax rx module is pushed to a 5k OHM resistor and then a 10 OHM resitor in order for it to function properly.
+ 	
+ 	
+ 	
+ 	Sources // 
+ 	https://www.britannica.com/technology/key-lock-device
+ 	https://en.wikipedia.org/wiki/Advanced_Encryption_Standard
+ 	https://mschoeffler.com/2020/12/19/lora-sender-receiver-communication-with-reyax-rylr896-breakout-boards-rylr890-modules/
+ 	
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+
