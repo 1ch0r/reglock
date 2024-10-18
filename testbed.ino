@@ -1,5 +1,3 @@
-// try this code cyka
-
 #include <SoftwareSerial.h>
 #include <SPI.h>
 #include <MFRC522.h>
@@ -123,7 +121,7 @@ void sendRegistersToReyax() {
   }
 
   String sendCommand = "AT+SEND=0,100," + message + "\r\n";
-  reyaxSerial.print(generateSendCommand(sendCommand));
+  reyaxSerial.print(sendCommand);
   Serial.print("Sent register values to Reyax: ");
   Serial.println(sendCommand);
 }
@@ -175,39 +173,48 @@ void parseLoRaMessage(String message) {
     }
     
     // Find the rolling code separator (comma) and parse UID correctly
-    int rollingCodeIndex = message.indexOf(',', startDataIndex);
-    if (rollingCodeIndex == -1) {
-      rollingCodeIndex = message.indexOf('\r', startDataIndex);
-    }
-    if (rollingCodeIndex == -1) {
-      rollingCodeIndex = message.indexOf('\n', startDataIndex);
-    }
-    
-    // Extract UID, excluding the rolling code
-    String uid = message.substring(startDataIndex, rollingCodeIndex);
-    uid.trim();
+    int rollingCodeIndex = message.indexOf('-', startDataIndex);
+    if (rollingCodeIndex != -1) {
+      // Move start index to the character after '-'
+      startDataIndex = rollingCodeIndex + 1;
 
-    Serial.print("Command: ");
-    Serial.println(action);
+      // Find the end of the UID (next comma or end of message)
+      int uidEndIndex = message.indexOf(',', startDataIndex);
+      if (uidEndIndex == -1) {
+        uidEndIndex = message.indexOf('\r', startDataIndex);
+      }
+      if (uidEndIndex == -1) {
+        uidEndIndex = message.indexOf('\n', startDataIndex);
+      }
+      
+      // Extract UID, excluding the rolling code
+      String uid = message.substring(startDataIndex, uidEndIndex);
+      uid.trim();
 
-    if (action == "EXX") {
-      setKeySlot(0, uid);
-    } else if (action == "EYX") {
-      setKeySlot(1, uid);
-    } else if (action == "EZX") {
-      setKeySlot(2, uid);
-    } else if (action == "remove EXX") {
-      clearKeySlot(0);
-    } else if (action == "remove EYX") {
-      clearKeySlot(1);
-    } else if (action == "remove EZX") {
-      clearKeySlot(2);
+      Serial.print("Command: ");
+      Serial.println(action);
+
+      if (action == "EXX") {
+        setKeySlot(0, uid);
+      } else if (action == "EYX") {
+        setKeySlot(1, uid);
+      } else if (action == "EZX") {
+        setKeySlot(2, uid);
+      } else if (action == "remove EXX") {
+        clearKeySlot(0);
+      } else if (action == "remove EYX") {
+        clearKeySlot(1);
+      } else if (action == "remove EZX") {
+        clearKeySlot(2);
+      } else {
+        Serial.println("Unknown command.");
+      }
+
+      sendAcknowledgment(uid + " processed in slot " + action);
+      sendRegistersToReyax();
     } else {
-      Serial.println("Unknown command.");
+      Serial.println("Rolling code not found.");
     }
-
-    sendAcknowledgment(uid + " processed in slot " + action);
-    sendRegistersToReyax();
   } else {
     Serial.println("Data does not contain a recognizable command.");
   }
