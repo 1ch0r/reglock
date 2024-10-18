@@ -1,4 +1,4 @@
-// Try this code cyka
+// try this code cyka
 
 #include <SoftwareSerial.h>
 #include <SPI.h>
@@ -134,6 +134,7 @@ void parseLoRaMessage(String message) {
   
   message.trim();
   
+  // Adjust parsing to exclude rolling code
   int startDataIndex = message.indexOf("EXX-");
   if (startDataIndex == -1) {
     startDataIndex = message.indexOf("EYX-");
@@ -172,14 +173,18 @@ void parseLoRaMessage(String message) {
       action = "remove EZX";
       startDataIndex += strlen("remove EZX");
     }
-    int endDataIndex = message.indexOf(',', startDataIndex);
-    if (endDataIndex == -1) {
-      endDataIndex = message.indexOf('\r', startDataIndex);
+    
+    // Find the rolling code separator (comma) and parse UID correctly
+    int rollingCodeIndex = message.indexOf(',', startDataIndex);
+    if (rollingCodeIndex == -1) {
+      rollingCodeIndex = message.indexOf('\r', startDataIndex);
     }
-    if (endDataIndex == -1) {
-      endDataIndex = message.indexOf('\n', startDataIndex);
+    if (rollingCodeIndex == -1) {
+      rollingCodeIndex = message.indexOf('\n', startDataIndex);
     }
-    String uid = message.substring(startDataIndex, endDataIndex);
+    
+    // Extract UID, excluding the rolling code
+    String uid = message.substring(startDataIndex, rollingCodeIndex);
     uid.trim();
 
     Serial.print("Command: ");
