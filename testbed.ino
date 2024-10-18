@@ -132,68 +132,47 @@ void parseLoRaMessage(String message) {
   
   message.trim();
   
-  // Adjust parsing to exclude rolling code
-  int startDataIndex = message.indexOf("EXX-");
-  if (startDataIndex == -1) {
-    startDataIndex = message.indexOf("EYX-");
+  // Identify command types
+  String action;
+  int startDataIndex = -1;
+
+  if (message.startsWith("EXX-")) {
+    action = "EXX";
+    startDataIndex = message.indexOf("EXX-") + strlen("EXX-");
+  } else if (message.startsWith("EYX-")) {
+    action = "EYX";
+    startDataIndex = message.indexOf("EYX-") + strlen("EYX-");
+  } else if (message.startsWith("EZX-")) {
+    action = "EZX";
+    startDataIndex = message.indexOf("EZX-") + strlen("EZX-");
   }
+
+  // Handle remove actions
   if (startDataIndex == -1) {
-    startDataIndex = message.indexOf("EZX-");
-  }
-  if (startDataIndex == -1) {
-    startDataIndex = message.indexOf("remove EXX");
-  }
-  if (startDataIndex == -1) {
-    startDataIndex = message.indexOf("remove EYX");
-  }
-  if (startDataIndex == -1) {
-    startDataIndex = message.indexOf("remove EZX");
+    if (message.startsWith("remove EXX")) {
+      action = "remove EXX";
+      startDataIndex = message.indexOf("remove EXX") + strlen("remove EXX");
+    } else if (message.startsWith("remove EYX")) {
+      action = "remove EYX";
+      startDataIndex = message.indexOf("remove EYX") + strlen("remove EYX");
+    } else if (message.startsWith("remove EZX")) {
+      action = "remove EZX";
+      startDataIndex = message.indexOf("remove EZX") + strlen("remove EZX");
+    }
   }
 
   if (startDataIndex != -1) {
-    String action;
-    if (message.indexOf("EXX-") == startDataIndex) {
-      action = "EXX";
-      startDataIndex += strlen("EXX-");
-    } else if (message.indexOf("EYX-") == startDataIndex) {
-      action = "EYX";
-      startDataIndex += strlen("EYX-");
-    } else if (message.indexOf("EZX-") == startDataIndex) {
-      action = "EZX";
-      startDataIndex += strlen("EZX-");
-    } else if (message.indexOf("remove EXX") == startDataIndex) {
-      action = "remove EXX";
-      startDataIndex += strlen("remove EXX");
-    } else if (message.indexOf("remove EYX") == startDataIndex) {
-      action = "remove EYX";
-      startDataIndex += strlen("remove EYX");
-    } else if (message.indexOf("remove EZX") == startDataIndex) {
-      action = "remove EZX";
-      startDataIndex += strlen("remove EZX");
-    }
-    
-    // Find the rolling code separator (comma) and parse UID correctly
+    // Find the rolling code separator (the first '-' after the start index)
     int rollingCodeIndex = message.indexOf('-', startDataIndex);
     if (rollingCodeIndex != -1) {
-      // Move start index to the character after '-'
-      startDataIndex = rollingCodeIndex + 1;
-
-      // Find the end of the UID (next comma or end of message)
-      int uidEndIndex = message.indexOf(',', startDataIndex);
-      if (uidEndIndex == -1) {
-        uidEndIndex = message.indexOf('\r', startDataIndex);
-      }
-      if (uidEndIndex == -1) {
-        uidEndIndex = message.indexOf('\n', startDataIndex);
-      }
-      
-      // Extract UID, excluding the rolling code
-      String uid = message.substring(startDataIndex, uidEndIndex);
+      // Extract the UID, excluding the rolling code
+      String uid = message.substring(startDataIndex, rollingCodeIndex);
       uid.trim();
 
       Serial.print("Command: ");
       Serial.println(action);
 
+      // Store the UID in the appropriate slot
       if (action == "EXX") {
         setKeySlot(0, uid);
       } else if (action == "EYX") {
@@ -219,6 +198,7 @@ void parseLoRaMessage(String message) {
     Serial.println("Data does not contain a recognizable command.");
   }
 }
+
 
 // Function to set a key in a specific slot
 void setKeySlot(int slot, String uid) {
