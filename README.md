@@ -14,6 +14,7 @@ Modules: Stepper Motor, NFC/RFID Module, Breadboard
 # Software
 
 Languages Used: C++, Python
+IDE: Arduino IDE, PyCharm, Nano, Vim
 
 # Philosophy
 
